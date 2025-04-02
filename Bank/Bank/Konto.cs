@@ -7,29 +7,42 @@
         public bool Zablokowane { get; private set; }
         public Konto(string klient, decimal bilans = 0)
         {
+            if (string.IsNullOrWhiteSpace(klient))
+                throw new ArgumentException("Nazwa klienta nie może być pusta");
+            if (bilans < 0)
+                throw new ArgumentException("Kwota musi być dodatnia lub równa zero");
             this.Klient = klient;
             this.Bilans = bilans;
         }
 
-        void Wplata(decimal kwota)
+        public void Wplata(decimal kwota)
         {
             if (this.Zablokowane)
-                throw new System.Exception("Konto zablokowane");
+                throw new ArgumentException("Konto zablokowane");
             if (kwota <= 0)
-                throw new System.Exception("Kwota musi być dodatnia");
+                throw new ArgumentException("Kwota musi być dodatnia");
             this.Bilans += kwota;
         }
 
-        void Wyplata(decimal kwota)
+        public void Wyplata(decimal kwota)
         {
             if (this.Zablokowane)
-                throw new System.Exception("Konto zablokowane");
+                throw new ArgumentException("Konto zablokowane");
             if (kwota <= 0)
-                throw new System.Exception("Kwota musi być dodatnia");
+                throw new ArgumentException("Kwota musi być dodatnia");
             if (kwota > this.Bilans)
-                throw new System.Exception("Brak środków na koncie");
+                throw new ArgumentException("Brak środków na koncie");
             this.Bilans -= kwota;
         }
 
+        public void BlokujKonto()
+        {
+            this.Zablokowane = true;
+        }
+
+        public void OdblokujKonto()
+        {
+            this.Zablokowane = false;
+        }
     }
 }
