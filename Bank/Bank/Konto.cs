@@ -3,8 +3,7 @@
     public class Konto
     {
         public string Klient { get; }
-        private decimal bilans;
-        public decimal Bilans { get; private set; }
+        public decimal Bilans { get; protected set; }
 
         public bool Zablokowane { get; private set; }
         public Konto(string klient, decimal bilans = 0)
@@ -50,62 +49,42 @@
 
     public class KontoPlus : Konto
     {
-        public new decimal Bilans { get; private set; }
-        private bool debetUzyty;
-        private decimal debet;
-        public decimal Debet
-        {
-            get => debet;
-            private set
-            {
-                if (value < 0)
-                    throw new ArgumentException("Debet musi być dodatni lub równy zero");
-                debet = value;
-            }
-        }
+        public decimal Debet { get; private set; }
         public KontoPlus(string klient, decimal bilans = 0, decimal debet = 0) : base(klient, bilans)
         {
+            if (debet < 0)
+                throw new ArgumentException("Debet nie może być ujemny");
             this.Debet = debet;
         }
-        public void ZwiekszenieLimitu(decimal debet)
+
+        public void ZwiekszenieDebetu(decimal kwota)
         {
-            if (debet <= 0)
+            if (kwota <= 0)
                 throw new ArgumentException("Kwota musi być dodatnia");
-            if (debet > Debet)
-                debetUzyty = false;
-            Debet += debet;
+            this.Debet += kwota;
         }
 
-        public void ZmniejszenieLimitu(decimal kwota)
+        public void ZmniejszenieDebetu(decimal kwota)
         {
-            if (kwota > Debet)
-                throw new ArgumentException("Kwota nie może być większa niż aktualny debet");        
-            Debet -= kwota;
+            if (kwota <= 0)
+                throw new ArgumentException("Kwota musi być dodatnia");
+            if (kwota > this.Debet)
+                throw new ArgumentException("Nie można zmniejszyć debetu poniżej zera");
+            this.Debet -= kwota;
         }
 
-        public new void Wplata(decimal kwota)
-        {
-            base.Wplata(kwota);
-            if (Bilans > 0)
-            {
-                OdblokujKonto();
-                debetUzyty = false;
-            }
-        }
         public new void Wyplata(decimal kwota)
         {
-            if (Zablokowane)
+            if (this.Zablokowane)
                 throw new ArgumentException("Konto zablokowane");
             if (kwota <= 0)
                 throw new ArgumentException("Kwota musi być dodatnia");
-            if (kwota > Bilans)
-            {
-                if (debetUzyty || kwota > base.Bilans + Debet)
-                    throw new ArgumentException("Brak środków na koncie");
-                debetUzyty = true;
-                BlokujKonto();
-            }
+            if (this.Bilans < 0)
+                throw new ArgumentException("Debet został już użyty");
+            if (kwota > this.Bilans + this.Debet)
+                throw new ArgumentException("Brak środków na koncie");
             this.Bilans -= kwota;
+            
         }
     }
 }

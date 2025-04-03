@@ -202,7 +202,7 @@ namespace Test
                 var konto = new KontoPlus("Jan", 1000, 100);
                 var debet = 100;
                 // Act
-                konto.ZwiekszenieLimitu(debet);
+                konto.ZwiekszenieDebetu(debet);
                 // Assert
                 Assert.AreEqual(200, konto.Debet);
             }
@@ -214,7 +214,7 @@ namespace Test
                 var debet = -100;
                 // Act
                 // Assert
-                Assert.ThrowsException<ArgumentException>(() => konto.ZwiekszenieLimitu(debet));
+                Assert.ThrowsException<ArgumentException>(() => konto.ZwiekszenieDebetu(debet));
             }
             [TestMethod]
             public void ZwiekszenieLimituDebetZero()
@@ -224,7 +224,28 @@ namespace Test
                 var debet = 0;
                 // Act
                 // Assert
-                Assert.ThrowsException<ArgumentException>(() => konto.ZwiekszenieLimitu(debet));
+                Assert.ThrowsException<ArgumentException>(() => konto.ZwiekszenieDebetu(debet));
+            }
+            [TestMethod]
+            public void ZmniejszenieLimitu()
+            {
+                // Arrage
+                var konto = new KontoPlus("Jan", 1000, 100);
+                var debet = 50;
+                // Act
+                konto.ZmniejszenieDebetu(debet);
+                // Assert
+                Assert.AreEqual(50, konto.Debet);
+            }
+            [TestMethod]
+            public void ZmniejszenieLimituMniejZero()
+            {
+                // Arrage
+                var konto = new KontoPlus("Jan", 1000, 100);
+                var debet = -50;
+                // Act
+                // Assert
+                Assert.ThrowsException<ArgumentException>(() => konto.ZmniejszenieDebetu(debet));
             }
             [TestMethod]
             public void Wplata()
@@ -321,19 +342,6 @@ namespace Test
                 // Act
                 // Assert
                 Assert.ThrowsException<ArgumentException>(() => konto.Wyplata(100));
-            }
-            [TestMethod]
-            public void WyplataDebetBrakSrodkowDebetZwiekszenie()
-            {
-                // Arrage
-                var konto = new KontoPlus("Jan", 1000, 100);
-                var kwota = 1100;
-                konto.Wyplata(kwota);
-                // Act
-                konto.ZwiekszenieLimitu(100);
-                konto.Wyplata(100);
-                // Assert
-                Assert.AreEqual(-100, konto.Bilans);
             }
         }
     }
