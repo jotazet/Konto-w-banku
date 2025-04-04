@@ -1,6 +1,16 @@
 ﻿namespace Bank
 {
-    public class Konto
+    public interface InterfaceKonto
+    {
+        string Klient { get; }
+        decimal Bilans { get; }
+        bool Zablokowane { get; }
+        void BlokujKonto();
+        void OdblokujKonto();
+        void Wplata(decimal kwota);
+        void Wyplata(decimal kwota);
+    }
+    public class Konto : InterfaceKonto
     {
         public string Klient { get; }
         public decimal Bilans { get; protected set; }
@@ -44,6 +54,16 @@
         public void OdblokujKonto()
         {
             this.Zablokowane = false;
+        }
+
+        public KontoLimit ToKontoLimmit()
+        {
+            return new KontoLimit(this.Klient, this.Bilans);
+        }
+
+        public KontoPlus ToKontoPlus()
+        {
+            return new KontoPlus(this.Klient, this.Bilans);
         }
     }
 
@@ -98,9 +118,13 @@
                 this.OdblokujKonto();
             }
         }
+        public Konto ToKonto()
+        {
+            return new Konto(this.Klient, this.Bilans);
+        }
     }  
 
-    public class KontoLimit
+    public class KontoLimit : InterfaceKonto
     {
         private Konto konto;
         private decimal limit;
@@ -162,6 +186,11 @@
             if (kwota > this.limit)
                 throw new ArgumentException("Nie można zmniejszyć limitu poniżej zera");
             this.limit -= kwota;
+        }
+
+        public Konto ToKonto()
+        {
+            return new Konto(this.Klient, this.Bilans);
         }
 
     }

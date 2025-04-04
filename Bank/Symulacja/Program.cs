@@ -41,6 +41,13 @@ namespace Symulacja
             Console.WriteLine($"Po zwiększeniu limitu o 300: Limit: {kontoLimit.Limit}");
             kontoLimit.ZmniejszenieLimitu(200);
             Console.WriteLine($"Po zmniejszeniu limitu o 200: Limit: {kontoLimit.Limit}");
+
+            // Implementacja interfejsu
+            Konto jakub = new Konto("Jakub", 100);
+            KontoLimit jakubLimit = jakub.ToKontoLimmit();
+            jakub = jakubLimit.ToKonto();
+            KontoPlus jakubPlus = jakub.ToKontoPlus();
+            jakub = jakubPlus.ToKonto();
         }
     }
 }
