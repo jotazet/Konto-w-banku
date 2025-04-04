@@ -93,7 +93,7 @@
             if (kwota <= 0)
                 throw new ArgumentException("Kwota musi być dodatnia");
             this.Bilans += kwota;
-            if (this.Bilans > 0)
+            if (this.Bilans >= 0)
             {
                 this.OdblokujKonto();
             }
@@ -127,7 +127,7 @@
             if (kwota <= 0)
                 throw new ArgumentException("Kwota musi być dodatnia");
             bilans += kwota;
-            if (this.Bilans > 0)
+            if (this.Bilans >= 0)
             {
                 this.OdblokujKonto();
             }
