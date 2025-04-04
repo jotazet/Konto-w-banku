@@ -1,7 +1,4 @@
 ﻿using Bank;
-using System.Diagnostics;
-using static Bank.KontoPlus;
-using static Bank.KontoLimit;
 
 namespace Test
 {
@@ -266,6 +263,16 @@ namespace Test
             kontoPlus.OdblokujKonto();
             Assert.IsFalse(kontoPlus.Zablokowane);
         }
+
+        [TestMethod]
+        public void KontoPlus_WyplacWplacZero()
+        {
+            var kontoPlus = new KontoPlus("Jakub", 1000, 500);
+            kontoPlus.Wyplata(1500);
+            Assert.AreEqual(-500, kontoPlus.Bilans);
+            kontoPlus.Wplata(500);
+            Assert.AreEqual(0, kontoPlus.Bilans);
+        }
     }
 
     [TestClass]
@@ -412,6 +419,16 @@ namespace Test
             Assert.IsTrue(kontoLimit.Zablokowane);
             kontoLimit.OdblokujKonto();
             Assert.IsFalse(kontoLimit.Zablokowane);
+        }
+
+        [TestMethod]
+        public void KontoLimit_WyplacWplacZero()
+        {
+            var kontoLimit = new KontoLimit("Jakub", 1000, 500);
+            kontoLimit.Wyplata(1500);
+            Assert.AreEqual(-500, kontoLimit.Bilans);
+            kontoLimit.Wplata(500);
+            Assert.AreEqual(0, kontoLimit.Bilans);
         }
     }
 
