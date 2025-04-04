@@ -16,7 +16,7 @@
             this.Bilans = bilans;
         }
 
-        public void Wplata(decimal kwota)
+        public virtual void Wplata(decimal kwota)
         {
             if (this.Zablokowane)
                 throw new ArgumentException("Konto zablokowane");
@@ -25,7 +25,7 @@
             this.Bilans += kwota;
         }
 
-        public void Wyplata(decimal kwota)
+        public virtual void Wyplata(decimal kwota)
         {
             if (this.Zablokowane)
                 throw new ArgumentException("Konto zablokowane");
@@ -73,7 +73,7 @@
             this.Debet -= kwota;
         }
 
-        public new void Wyplata(decimal kwota)
+        public override void Wyplata(decimal kwota)
         {
             if (this.Zablokowane)
                 throw new ArgumentException("Konto zablokowane");
@@ -85,10 +85,10 @@
             if (this.Bilans < 0)
             {
                 this.BlokujKonto();
-            }            
+            }
         }
 
-        public new void Wplata(decimal kwota)
+        public override void Wplata(decimal kwota)
         {
             if (kwota <= 0)
                 throw new ArgumentException("Kwota musi być dodatnia");
@@ -98,5 +98,71 @@
                 this.OdblokujKonto();
             }
         }
+    }  
+
+    public class KontoLimit
+    {
+        private Konto konto;
+        private decimal limit;
+        private decimal bilans;
+
+        public KontoLimit(string klient, decimal bilans = 0, decimal limit = 0)
+        {
+            if (limit < 0)
+                throw new ArgumentException("Limit nie może być ujemny");
+            this.konto = new Konto(klient, bilans);
+            this.bilans = bilans;
+            this.limit = limit;
+        }
+        public string Klient => this.konto.Klient;
+        public decimal Bilans => bilans;
+        public bool Zablokowane => this.konto.Zablokowane;
+        public decimal Limit => this.limit;
+
+        public void BlokujKonto() => this.konto.BlokujKonto();
+        public void OdblokujKonto() => this.konto.OdblokujKonto();
+
+        public void Wplata(decimal kwota)
+        {
+            if (kwota <= 0)
+                throw new ArgumentException("Kwota musi być dodatnia");
+            bilans += kwota;
+            if (this.Bilans > 0)
+            {
+                this.OdblokujKonto();
+            }
+        }
+
+        public void Wyplata(decimal kwota)
+        {
+            if (this.konto.Zablokowane)
+                throw new ArgumentException("Konto zablokowane");
+            if (kwota <= 0)
+                throw new ArgumentException("Kwota musi być dodatnia");
+            if (kwota > this.Bilans + this.limit)
+                throw new ArgumentException("Brak środków na koncie");
+            bilans -= kwota;
+            if (this.Bilans < 0)
+            {
+                this.konto.BlokujKonto();
+            }
+        }
+
+        public void ZwiekszenieLimitu(decimal kwota)
+        {
+            if (kwota <= 0)
+                throw new ArgumentException("Kwota musi być dodatnia");
+            this.limit += kwota;
+        }
+
+        public void ZmniejszenieLimitu(decimal kwota)
+        {
+            if (kwota <= 0)
+                throw new ArgumentException("Kwota musi być dodatnia");
+            if (kwota > this.limit)
+                throw new ArgumentException("Nie można zmniejszyć limitu poniżej zera");
+            this.limit -= kwota;
+        }
+
     }
 }
