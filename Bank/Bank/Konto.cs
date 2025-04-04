@@ -79,12 +79,24 @@
                 throw new ArgumentException("Konto zablokowane");
             if (kwota <= 0)
                 throw new ArgumentException("Kwota musi być dodatnia");
-            if (this.Bilans < 0)
-                throw new ArgumentException("Debet został już użyty");
             if (kwota > this.Bilans + this.Debet)
                 throw new ArgumentException("Brak środków na koncie");
             this.Bilans -= kwota;
-            
+            if (this.Bilans < 0)
+            {
+                this.BlokujKonto();
+            }            
+        }
+
+        public new void Wplata(decimal kwota)
+        {
+            if (kwota <= 0)
+                throw new ArgumentException("Kwota musi być dodatnia");
+            this.Bilans += kwota;
+            if (this.Bilans > 0)
+            {
+                this.OdblokujKonto();
+            }
         }
     }
 }
